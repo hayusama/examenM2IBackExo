@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}} - Page accueil{% endblock %}
+
+{% block body %}
+{% include "parts/banniere.html.twig" %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="text-center">Geek Store</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {% for flashMessage in app.flashes('info') %}
+            <div class="alert alert-info">
+                {{flashMessage}}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        {% for produit in produits %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                <div class="card my-4">
+                    <img src="{{produit.image}}" class="card-img-top">
+                    <div class="card-body">
+                        <h2 class="card-title">{{produit.nom}}</h2>
+                        <p class="card-text">{{produit.descriptionCourte}}</p>
+                        <p class="card-price fw-bold">{{produit.tarif}} €</p>
+                        <a href="{{path('app_produit', {'id':produit.id, 'slug':produit.nom|replace({' ':'-'})})}}" class="btn btn-primary">Voir ce produit</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

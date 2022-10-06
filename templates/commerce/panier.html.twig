@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{parent()}} - Panier Geek{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="text-center">Panier Geek</h1>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {% for flashMessage in app.flashes('info') %}
+            <div class="alert alert-info">
+                {{flashMessage}}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        {% if app.session.get('panier') is not null %}
+        {% set total = 0 %}
+            {% for key,ligne in app.session.get('panier') %}
+            {% set total = total +  ligne.produit.tarif * ligne.quantite %}
+                <div class="row align-items-center">
+                    <div class="col-sm-2">
+                        <img src="{{ligne.produit.image}}" alt="" class="img-fluid img-thumbnail">
+                    </div>
+                    <div class="col-sm-5">
+                        <h4>{{ligne.produit.nom}}</h4>
+                    </div>
+                    <div class="col-sm-2">
+                        <strong>QTY : </strong>{{ligne.quantite}}
+                    </div>
+                    <div class="col-sm-3">
+                        <strong>Tarif : {{ligne.produit.tarif * ligne.quantite}} €</strong>
+                    </div>
+                    <hr class="my-4">
+                </div>
+            {% endfor %}
+            <div class="col-sm-3 offset-sm-9 my-3 g-0"><strong>TOTAL : {{total}} €</strong> </div>
+            <div class="col-sm-3 offset-sm-9 my-3 g-0" ><a href="{{path('app_commande')}}" class="btn btn-success">COMMANDER</a></div>
+        {% else %}
+            <p>Votre panier est actuellement vide! ACHETEZ</p>
+        {% endif %}
+        
+    </div>
+</div>
+
+{% endblock %}

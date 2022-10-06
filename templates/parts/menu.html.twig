@@ -1,0 +1,25 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="{{path('app_accueil')}}">Site E-commerce</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse flex-row-reverse" id="navbarNav">
+        <ul class="navbar-nav ">
+          {% for menu in listMenu %}
+            {% if menu.text == "Mon panier" %}
+                <li class="nav-item  ">
+                    <a class="nav-link {% if loop.index == 1 %} active {% endif %}" href="{{menu.url}}" title="{{menu.title}}">{{menu.text}} <span class="badge bg-primary">
+                      {% if app.session.get('panier') is not null %}{{app.session.get('panier')|length}}{% else %}0{% endif %}</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="nav-item  ">
+                    <a class="nav-link {% if loop.index == 1 %} active {% endif %}" href="{{menu.url}}" title="{{menu.title}}">{{menu.text}}</a>
+                </li> 
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </nav>
