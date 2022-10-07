@@ -2,15 +2,17 @@
 
 namespace App\Controller;
 
+use SessionHandler;
 use App\Entity\Produit;
+use App\Entity\Commande;
+use App\Entity\LigneCommande;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use SessionHandler;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class CommerceController extends AbstractController
 {
@@ -69,10 +71,31 @@ class CommerceController extends AbstractController
     #[Route('/commande', name: 'app_commande')]
     public function commande(SessionInterface $session,ManagerRegistry $doctrine): Response
     {
+        //ON A BESOIN DU MANAGER POUR FAIRE LE LIEN ENTRE L'OBJET ET LA BDD (AVEC PERSIST FLUSH)
+        $em = $doctrine->getManager();
 
-        $session->clear();
-        $this->addFlash('info', 'Votre commande a été validé');
-        return $this->redirectToRoute('app_accueil');
+        $commande = new Commande;
+        $commande->setNumRef(substr(sha1(mt_rand()),17,6));
+        $em->persist($commande);
+
+
+        //CREATION DES LIGNES
+        //SOLUTION POSSIBLE
+        $panier = $session->get('panier');
+        foreach($panier as $key=>$ligne){
+            $produit = $em->getRepository(Produit::class)->find($ligne['produit']->getId());
+            ${"ligneC".$key} = new LigneCommande;
+            ${"ligneC".$key}->setQuantite($ligne['quantite']);
+            ${"ligneC".$key}->setProduit($produit);
+            ${"ligneC".$key}->setCommande($commande);
+            $em->persist(${"ligneC".$key});
+        }
+
+         $em->flush();
+
+         $session->clear();
+         $this->addFlash('info', 'Votre commande a été validé');
+         return $this->redirectToRoute('app_accueil');
     }
 
 
